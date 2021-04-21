@@ -42,7 +42,7 @@ class _ListScreenState extends State<ListScreen> {
               ),
               title: Text(
                 item.title,
-                style: TextStyle(color: Colors.purple[400], decoration: Text),
+                style: TextStyle(color: Colors.purple[400]),
               ),
               onTap: () {
                 setState(() {

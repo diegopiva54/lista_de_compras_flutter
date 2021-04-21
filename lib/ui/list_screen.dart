@@ -21,27 +21,38 @@ class _ListScreenState extends State<ListScreen> {
         title: Text('Lista de Compras'),
         backgroundColor: Colors.purple,
       ),
-      body: ListView.separated(
-        separatorBuilder: (context, index) =>
-            Divider(color: Colors.purple[400]),
-        itemCount: itens.length,
-        itemBuilder: (context, index) {
-          final item = itens[index];
+      body: RefreshIndicator(
+        onRefresh: _refresh,
+        child: ListView.separated(
+          separatorBuilder: (context, index) =>
+              Divider(color: Colors.purple[400]),
+          itemCount: itens.length,
+          itemBuilder: (context, index) {
+            final item = itens[index];
 
-          return ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.purpleAccent[400],
-              child: IconTheme(
-                child: Icon(Icons.check),
-                data: IconThemeData(color: Colors.white),
+            return ListTile(
+              leading: CircleAvatar(
+                backgroundColor: Colors.purpleAccent[400],
+                child: IconTheme(
+                  child: Icon(itens[index].isDone
+                      ? Icons.check_box
+                      : Icons.check_box_outline_blank),
+                  data: IconThemeData(color: Colors.white),
+                ),
               ),
-            ),
-            title: Text(
-              item.title,
-              style: TextStyle(color: Colors.purple[400]),
-            ),
-          );
-        },
+              title: Text(
+                item.title,
+                style: TextStyle(color: Colors.purple[400], decoration: Text),
+              ),
+              onTap: () {
+                setState(() {
+                  itens[index].isDone = !itens[index].isDone;
+                  _refresh();
+                });
+              },
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.purple[400],
@@ -51,12 +62,30 @@ class _ListScreenState extends State<ListScreen> {
     );
   }
 
-  void _addItem() {
-    showDialog(
+  void _addItem() async {
+    final item = await showDialog<Item>(
         // abre uma modal neste contexto
         context: context,
         builder: (BuildContext context) {
           return new AddItem();
         });
+    if (item != null) {
+      setState(() {
+        itens.add(item);
+        _refresh();
+      });
+    }
+  }
+
+  Future<void> _refresh() async {
+    // Future retorna alguma coisa no futuro
+    await Future.delayed(Duration(seconds: 1));
+    setState(() {
+      itens.sort((a, b) {
+        if (a.isDone && !b.isDone) return 1;
+        if (!a.isDone && b.isDone) return -1;
+        return 0;
+      });
+    });
   }
 }

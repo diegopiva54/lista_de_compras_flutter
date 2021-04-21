@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:lista_de_compras/models/item.dart';
+
 class AddItem extends StatelessWidget {
   final itemC = TextEditingController();
 
@@ -19,7 +21,11 @@ class AddItem extends StatelessWidget {
           ),
           color: Colors.green[400],
           onPressed: () {
-            print(itemC.value.text);
+            final item = new Item(title: itemC.value.text);
+
+            itemC.clear(); // limpa a variável
+
+            Navigator.of(context).pop(item); // envia item para
           },
         ),
         FlatButton(
